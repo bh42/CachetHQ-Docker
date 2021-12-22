@@ -1,0 +1,30 @@
+name: Publish Cachet Docker image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push_to_registry:
+    name: Push CachetHQ Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/bh42/cachethq-docker/cachet:latest
